@@ -50,8 +50,11 @@ Navicon.nav_credit = (function () {
     return {
         onLoad : function (context) {
             let formContext = context.getFormContext();
-            formContext.getAttribute("nav_datestart").addOnChange(dateEndOnChange);
-            formContext.getAttribute("nav_dateend").addOnChange(dateEndOnChange);
+            let dateStart = formContext.getAttribute("nav_datestart");
+            dateStart.addOnChange(dateEndOnChange)
+            let dateEnd = formContext.getAttribute("nav_dateend");
+            dateEnd.addOnChange(dateEndOnChange);
+            dateIsValid = validateDate(dateStart.getValue(), dateEnd.getValue());
         },
         onSave : function (context) {
             if (!dateIsValid) {
