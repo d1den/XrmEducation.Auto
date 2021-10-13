@@ -44,7 +44,7 @@ Navicon.nav_credit = (function () {
         dateIsValid = validateDate(dateStart, dateEnd);
         if (!dateIsValid
             && dateStart != null && dateEnd != null) {
-            alert(alertMessage);
+                Xrm.Navigation.openAlertDialog(alertMessage);
         }
     }
     return {
@@ -55,7 +55,7 @@ Navicon.nav_credit = (function () {
         },
         onSave : function (context) {
             if (!dateIsValid) {
-                alert(alertMessage);
+                Xrm.Navigation.openAlertDialog(alertMessage);
                 context.getEventArgs().preventDefault();
             }
         }
