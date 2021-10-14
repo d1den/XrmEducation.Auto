@@ -99,21 +99,30 @@ Navicon.nav_agreement = (function () {
     return {
         onLoad : function (context) {
             let formContext = context.getFormContext();
+            // 1 пункт задания
             if (!baseValuesAreExist(context)) {
+                /*
+                так по заданию необходимо скрыть поля сумма и факт оплаты,
+                но не прописано, когда их открывать - они скрываются только 
+                при создании договора. При открытие созданного они не скрываются
+                */
                 formContext.getControl("nav_summa").setVisible(false);
                 formContext.getControl("nav_fact").setVisible(false);
                 formContext.getControl("nav_creditid").setVisible(false);
                 formContext.ui.tabs.get("tab_2").setVisible(false);
             }
+            // 2 пункт
             formContext.getAttribute("nav_contactid").addOnChange(contactAndAutoOnChange);
             formContext.getAttribute("nav_autoid").addOnChange(contactAndAutoOnChange);
-            formContext.getAttribute("nav_autoid").addOnChange(autoidOnChange);
-            formContext.getAttribute("nav_creditid").addOnChange(creditidOnChange);
-            formContext.getAttribute("nav_name").addOnChange(nameOnChange);
-
             contactAndAutoOnChange(context);
+            // 3 пункт
+            formContext.getAttribute("nav_creditid").addOnChange(creditidOnChange);
             creditidOnChange(context);
+            // 4 пункт
+            formContext.getAttribute("nav_autoid").addOnChange(autoidOnChange);
             autoidOnChange(context);
+            // 5 пункт - в случае неправильного ввода отображает ошибку заполнения поля
+            formContext.getAttribute("nav_name").addOnChange(nameOnChange);
         }
     }
 })();
