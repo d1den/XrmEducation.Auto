@@ -1,6 +1,7 @@
 var Navicon = Navicon || {};
 Navicon.nav_agreement = (function () {
     const NAME_ERROR_ID = "name_error";
+    const DATE_ERROR_ID = "date_error";
     const CREDIT_LAYOUT_XML = [
     "<grid name='resultset' object='1' jump='nav_name' select='1' icon='1' preview='1'>",
         "<row name='result' id='nav_creditid'>",
@@ -76,7 +77,6 @@ Navicon.nav_agreement = (function () {
                     formContext.getControl("nav_name")
                     .setNotification("Название договора должно содержать только цифры и знаки \"-\"",
                     NAME_ERROR_ID);
-                    return;
                 }
                 else {
                     formContext.getControl("nav_name").clearNotification(NAME_ERROR_ID);
@@ -96,10 +96,76 @@ Navicon.nav_agreement = (function () {
         "nav_credit", "Доступные кредитные программы",
         fetchXml, CREDIT_LAYOUT_XML, true);
     }
+    let agreementDateInCreditPeriod = function (creditDateStart, creditDateEnd, agreementDate) {
+        return secondDateIsGreater(creditDateStart, agreementDate)
+        && secondDateIsGreater(agreementDate, creditDateEnd);
+    }
+    let secondDateIsGreater = function (firstDate, secondDate) {
+        if (firstDate.getFullYear() < secondDate.getFullYear()) {
+            return true;
+        }
+        else if (firstDate.getFullYear() == secondDate.getFullYear()) {
+            if (firstDate.getMonth() < secondDate.getMonth()) {
+                return true;
+            }
+            else if (firstDate.getMonth() == secondDate.getMonth()) {
+                if (firstDate.getDay() <= secondDate.getDay()) {
+                    return true;
+                }
+                else {
+                    return true;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+    }
+    let validateCreditDate = function (context) {
+        let formContext = context.getFormContext();
+        let creditid = formContext.getAttribute("nav_creditid").getValue();
+        let dateAttribute = formContext.getAttribute("nav_date");
+        if (creditid != null && dateAttribute != null) {
+            Xrm.WebApi.retrieveRecord("nav_credit", creditid[0].id, "?$select=nav_datestart,nav_dateend").then(
+                function (credit) {
+                    let dateStart = new Date(credit.nav_datestart);
+                    let dateEnd = new Date(credit.nav_dateend);
+                    if (!agreementDateInCreditPeriod(dateStart,
+                    dateEnd, dateAttribute.getValue())) {
+                        formContext.getControl("nav_creditid")
+                        .setNotification("Срок действия кредитной программы истёк!"
+                        + " Выберите другую кредитную программу или дату договора.",
+                        DATE_ERROR_ID);
+                    }
+                    else {
+                        formContext.getControl("nav_creditid").clearNotification(DATE_ERROR_ID);
+                        return dateEnd.getFullYear() - dateStart.getFullYear();
+                    }
+                },
+                function (error) {
+                    console.error(error);
+                }
+            ).then(
+                function (creditPeriod) {
+                    if (!isNaN(creditPeriod)) {
+                        formContext.getAttribute("nav_creditperiod").setValue(creditPeriod);
+                    }
+                    else {
+                        formContext.getAttribute("nav_creditperiod").setValue(null);
+                    }
+                },
+                function (error) {
+                    console.error(error);
+                }
+            );
+        }
+    }
     return {
         onLoad : function (context) {
             let formContext = context.getFormContext();
-            // 1 пункт задания
             if (!baseValuesAreExist(context)) {
                 /*
                 так по заданию необходимо скрыть поля сумма и факт оплаты,
@@ -111,18 +177,17 @@ Navicon.nav_agreement = (function () {
                 formContext.getControl("nav_creditid").setVisible(false);
                 formContext.ui.tabs.get("tab_2").setVisible(false);
             }
-            // 2 пункт
             formContext.getAttribute("nav_contactid").addOnChange(contactAndAutoOnChange);
             formContext.getAttribute("nav_autoid").addOnChange(contactAndAutoOnChange);
             contactAndAutoOnChange(context);
-            // 3 пункт
             formContext.getAttribute("nav_creditid").addOnChange(creditidOnChange);
             creditidOnChange(context);
-            // 4 пункт
             formContext.getAttribute("nav_autoid").addOnChange(autoidOnChange);
             autoidOnChange(context);
-            // 5 пункт - в случае неправильного ввода отображает ошибку заполнения поля
             formContext.getAttribute("nav_name").addOnChange(nameOnChange);
+
+            formContext.getAttribute("nav_creditid").addOnChange(validateCreditDate);
+            formContext.getAttribute("nav_date").addOnChange(validateCreditDate);
         }
     }
 })();
