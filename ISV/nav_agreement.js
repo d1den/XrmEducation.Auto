@@ -10,20 +10,21 @@ Navicon.nav_agreement = (function () {
         "</row>",
     "</grid>"
     ].join("");
-    let baseValuesAreExist = function (context) {
+    let areMainValuesExist = function (context) {
         let formContext = context.getFormContext();
         let name = formContext.getAttribute("nav_name").getValue();
         let date = formContext.getAttribute("nav_date").getValue();
         let contact = formContext.getAttribute("nav_contactid").getValue();
         let auto = formContext.getAttribute("nav_autoid").getValue();
-        if (name != null && date != null && contact != null && auto != null) {
+        if (name != null && date != null
+            && contact != null && auto != null) {
             return true;
         }
         else {
             return false;
         }
     }
-    let getValidCreditsFetchXml = function (autoId) {
+    let getFethcXmlForCreditBySelectedAuto = function (autoId) {
         return [
             "<fetch>",
             "  <entity name='nav_credit'>",
@@ -42,7 +43,7 @@ Navicon.nav_agreement = (function () {
             "</fetch>",
             ].join("");
     }
-    var contactAndAutoOnChange = function (context) {
+    var setVisibleCreditByContactAndAuto = function (context) {
         let formContext = context.getFormContext();
         let contact = formContext.getAttribute("nav_contactid").getValue();
         let auto = formContext.getAttribute("nav_autoid").getValue();
@@ -54,7 +55,7 @@ Navicon.nav_agreement = (function () {
             formContext.ui.tabs.get("tab_2").setVisible(false);
         }
     }
-    var creditidOnChange = function (context) {
+    var setVisibleCreditTabBySelectedCredit = function (context) {
         let formContext = context.getFormContext();
         let creditid = formContext.getAttribute("nav_creditid").getValue();
         if (creditid != null) {
@@ -64,7 +65,7 @@ Navicon.nav_agreement = (function () {
             formContext.ui.tabs.get("tab_2").setVisible(false);
         }
     }
-    let nameOnChange = function (context) {
+    let validateName = function (context) {
         let formContext = context.getFormContext();
         let name = formContext.getControl("nav_name").getValue();
         if (name == null) {
@@ -84,23 +85,20 @@ Navicon.nav_agreement = (function () {
             }
         }
     }
-    let autoidOnChange = function (context) {
+    let setCreditViewBySelectedAuto = function (context) {
         let formContext = context.getFormContext();
         let auto = formContext.getAttribute("nav_autoid").getValue();
         if (auto == null) {
+            formContext.getAttribute("nav_creditid").setValue(null);
             return;
         }
-        let fetchXml = getValidCreditsFetchXml(auto[0].id);
+        let fetchXml = getFethcXmlForCreditBySelectedAuto(auto[0].id);
         formContext.getControl("nav_creditid")
         .addCustomView("5aaae264-6bf8-428e-a5ce-046b97b89cb1",
         "nav_credit", "Доступные кредитные программы",
         fetchXml, CREDIT_LAYOUT_XML, true);
     }
-    let agreementDateInCreditPeriod = function (creditDateStart, creditDateEnd, agreementDate) {
-        return secondDateIsGreater(creditDateStart, agreementDate)
-        && secondDateIsGreater(agreementDate, creditDateEnd);
-    }
-    let secondDateIsGreater = function (firstDate, secondDate) {
+    let isSecondDateGreater = function (firstDate, secondDate) {
         if (firstDate.getFullYear() < secondDate.getFullYear()) {
             return true;
         }
@@ -124,7 +122,11 @@ Navicon.nav_agreement = (function () {
             return false;
         }
     }
-    let validateCreditDate = function (context) {
+    let isDateInCreditPeriod = function (creditDateStart, creditDateEnd, agreementDate) {
+        return isSecondDateGreater(creditDateStart, agreementDate)
+        && isSecondDateGreater(agreementDate, creditDateEnd);
+    }
+    let validateDateByCreditPeriod = function (context) {
         let formContext = context.getFormContext();
         let creditid = formContext.getAttribute("nav_creditid").getValue();
         let dateAttribute = formContext.getAttribute("nav_date");
@@ -133,7 +135,7 @@ Navicon.nav_agreement = (function () {
                 function (credit) {
                     let dateStart = new Date(credit.nav_datestart);
                     let dateEnd = new Date(credit.nav_dateend);
-                    if (!agreementDateInCreditPeriod(dateStart,
+                    if (!isDateInCreditPeriod(dateStart,
                     dateEnd, dateAttribute.getValue())) {
                         formContext.getControl("nav_creditid")
                         .setNotification("Срок действия кредитной программы истёк!"
@@ -148,10 +150,17 @@ Navicon.nav_agreement = (function () {
                 function (error) {
                     console.error(error);
                 }
-            ).then(
-                function (creditPeriod) {
-                    if (!isNaN(creditPeriod)) {
-                        formContext.getAttribute("nav_creditperiod").setValue(creditPeriod);
+            );
+        }
+    }
+    let setCreditPeriod = function (context) {
+        let formContext = context.getFormContext();
+        let creditid = formContext.getAttribute("nav_creditid").getValue();
+        if (creditid != null) {
+            Xrm.WebApi.retrieveRecord("nav_credit", creditid[0].id, "?$select=nav_creditperiod").then(
+                function (credit) {
+                    if (!isNaN(credit.nav_creditperiod)) {
+                        formContext.getAttribute("nav_creditperiod").setValue(credit.nav_creditperiod);
                     }
                     else {
                         formContext.getAttribute("nav_creditperiod").setValue(null);
@@ -163,10 +172,36 @@ Navicon.nav_agreement = (function () {
             );
         }
     }
+    let setSummaByAutoOrModel = function (context) {
+        let formContext = context.getFormContext();
+        let auto = formContext.getAttribute("nav_autoid").getValue();
+        let summaAttribute = formContext.getAttribute("nav_summa");
+        if (auto == null) {
+            summaAttribute.setValue(null);
+            formContext.getControl("nav_summa").setVisible(false);
+        }
+        else {
+            Xrm.WebApi.retrieveRecord("nav_auto", auto[0].id,
+            "?$select=nav_used,nav_amount&$expand=nav_modelid($select=nav_recommendedamount)").then(
+                function (auto) {
+                    if (auto.nav_used) {
+                        summaAttribute.setValue(auto.nav_amount);
+                    }
+                    else {
+                        summaAttribute.setValue(auto.nav_modelid.nav_recommendedamount);
+                    }
+                    formContext.getControl("nav_summa").setVisible(true);
+                },
+                function (error) {
+                    console.error(error);
+                }
+            );
+        }
+    }
     return {
         onLoad : function (context) {
             let formContext = context.getFormContext();
-            if (!baseValuesAreExist(context)) {
+            if (!areMainValuesExist(context)) {
                 /*
                 так по заданию необходимо скрыть поля сумма и факт оплаты,
                 но не прописано, когда их открывать - они скрываются только 
@@ -177,17 +212,30 @@ Navicon.nav_agreement = (function () {
                 formContext.getControl("nav_creditid").setVisible(false);
                 formContext.ui.tabs.get("tab_2").setVisible(false);
             }
-            formContext.getAttribute("nav_contactid").addOnChange(contactAndAutoOnChange);
-            formContext.getAttribute("nav_autoid").addOnChange(contactAndAutoOnChange);
-            contactAndAutoOnChange(context);
-            formContext.getAttribute("nav_creditid").addOnChange(creditidOnChange);
-            creditidOnChange(context);
-            formContext.getAttribute("nav_autoid").addOnChange(autoidOnChange);
-            autoidOnChange(context);
-            formContext.getAttribute("nav_name").addOnChange(nameOnChange);
+            setVisibleCreditByContactAndAuto(context);
+            setVisibleCreditTabBySelectedCredit(context);
+            setCreditViewBySelectedAuto(context);
+            formContext.getAttribute("nav_contactid").addOnChange(setVisibleCreditByContactAndAuto);
 
-            formContext.getAttribute("nav_creditid").addOnChange(validateCreditDate);
-            formContext.getAttribute("nav_date").addOnChange(validateCreditDate);
+            formContext.getAttribute("nav_autoid").addOnChange(setVisibleCreditByContactAndAuto);
+            formContext.getAttribute("nav_autoid").addOnChange(setCreditViewBySelectedAuto);
+            formContext.getAttribute("nav_autoid").addOnChange(setSummaByAutoOrModel);
+
+            formContext.getAttribute("nav_creditid").addOnChange(setVisibleCreditTabBySelectedCredit);
+            formContext.getAttribute("nav_creditid").addOnChange(validateDateByCreditPeriod);
+            formContext.getAttribute("nav_creditid").addOnChange(setCreditPeriod);
+
+            formContext.getAttribute("nav_name").addOnChange(validateName);
+
+            formContext.getAttribute("nav_date").addOnChange(validateDateByCreditPeriod);
+            formContext.getControl("WebResource_calculateCredit").getContentWindow().then(
+                function (contentWindow) {
+                    contentWindow.Navicon.nav_calculateCredit.setFormContext(formContext);
+                },
+                function (error) {
+                    console.error(error);
+                }
+            );
         }
     }
 })();
