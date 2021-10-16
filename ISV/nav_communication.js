@@ -2,7 +2,7 @@ var Navicon = Navicon || {};
 Navicon.nav_communication = (function () {
     const TYPE_PHONE = 808630001;
     const TYPE_EMAIL = 808630002;
-    var typeOnChange = function (context) {
+    var setVisibleSelectedType = function (context) {
         let formContext = context.getFormContext();
         let typeAttribute = formContext.getAttribute("nav_type");
         let type = typeAttribute.getValue();
@@ -21,10 +21,10 @@ Navicon.nav_communication = (function () {
     }
     return {
         onLoad : function (context) {
-            typeOnChange(context);
+            setVisibleSelectedType(context);
             let formContext = context.getFormContext();
             let typeAttribute = formContext.getAttribute("nav_type");
-            typeAttribute.addOnChange(typeOnChange);
+            typeAttribute.addOnChange(setVisibleSelectedType);
         }
     }
 })();
