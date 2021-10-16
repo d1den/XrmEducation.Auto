@@ -1,6 +1,6 @@
 var Navicon = Navicon || {};
 Navicon.nav_auto = (function () {
-    var usedOnChange = function (context) {
+    var setVisibleByUsed = function (context) {
         let formContext = context.getFormContext();
         let used = formContext.getAttribute("nav_used").getValue();
         if (used) {
@@ -16,10 +16,10 @@ Navicon.nav_auto = (function () {
     }
     return {
         onLoad : function (context) {
-            usedOnChange(context);
+            setVisibleByUsed(context);
             let formContext = context.getFormContext();
             let usedAttribute = formContext.getAttribute("nav_used");
-            usedAttribute.addOnChange(usedOnChange);
+            usedAttribute.addOnChange(setVisibleByUsed);
         }
     }
 })();
