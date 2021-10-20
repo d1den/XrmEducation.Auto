@@ -17,7 +17,7 @@ namespace Navicon.Crm.Auto.Plugins.nav_agreement
         {
             var targetEntity = target as Entity;
             AgreementService agreementService = new AgreementService(service, tracing);
-            agreementService.SetFirstAgreementsDateInContact(targetEntity);
+            agreementService.SetDateInContact(targetEntity);
         }
     }
 }

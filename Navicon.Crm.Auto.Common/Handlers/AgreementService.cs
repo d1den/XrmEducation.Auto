@@ -19,7 +19,7 @@ namespace Navicon.Crm.Auto.Common.Handlers
             _tracing = tracing ?? throw new ArgumentNullException(nameof(tracing));
         }
 
-        public void SetFirstAgreementsDateInContact(Entity target)
+        public void SetDateInContact(Entity target)
         {
             var agreement = target.ToEntity<nav_agreement>();
             var contact = _service.Retrieve(Contact.EntityLogicalName,

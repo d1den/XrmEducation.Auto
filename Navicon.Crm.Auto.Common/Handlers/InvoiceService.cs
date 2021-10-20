@@ -28,9 +28,10 @@ namespace Navicon.Crm.Auto.Common.Handlers
                 target["nav_type"] = invoice["nav_type"];
             }
         }
+
         public void SetAgreementFactSumma(object target, bool increase)
         {
-            var invoice = GetInvoiceForSetAgreementFactSumma(target);
+            var invoice = GetInvoice(target);
             if (invoice.nav_dogovorid is null || invoice.nav_amount is null
                 || invoice.nav_fact is null || invoice.nav_fact == false)
             {
@@ -49,7 +50,7 @@ namespace Navicon.Crm.Auto.Common.Handlers
             }
         }
 
-        private nav_invoice GetInvoiceForSetAgreementFactSumma(object target)
+        private nav_invoice GetInvoice(object target)
         {
             nav_invoice targetInvoice = target is Entity ? (target as Entity).ToEntity<nav_invoice>() : null;
             if (targetInvoice is null)
