@@ -1,0 +1,51 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31727.386
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navicon.Crm.Auto.Plugins", "Navicon.Crm.Auto.Plugins\Navicon.Crm.Auto.Plugins.csproj", "{0FDCF1F5-91AF-410C-A687-0A1EAC202794}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ISV", "ISV", "{5AC2190A-ED1C-4A4A-9244-B2ED642C1171}"
+	ProjectSection(SolutionItems) = preProject
+		ISV\AutoRelatedCredits.xml = ISV\AutoRelatedCredits.xml
+		ISV\nav_agreement.js = ISV\nav_agreement.js
+		ISV\nav_auto.js = ISV\nav_auto.js
+		ISV\nav_brand.js = ISV\nav_brand.js
+		ISV\nav_brandRelatedCredits.html = ISV\nav_brandRelatedCredits.html
+		ISV\nav_brandRelatedCredits.js = ISV\nav_brandRelatedCredits.js
+		ISV\nav_calculateCredit.html = ISV\nav_calculateCredit.html
+		ISV\nav_calculateCredit.js = ISV\nav_calculateCredit.js
+		ISV\nav_communication.js = ISV\nav_communication.js
+		ISV\nav_credit.js = ISV\nav_credit.js
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navicon.Crm.Auto.ConsoleTest", "Navicon.Crm.Auto.ConsoleTest\Navicon.Crm.Auto.ConsoleTest.csproj", "{5C467107-F8E2-4364-906D-03443BF6DD88}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Navicon.Crm.Auto.Common", "Navicon.Crm.Auto.Common\Navicon.Crm.Auto.Common.csproj", "{299EBD2D-4E93-4A79-B5C3-313C73AE58B5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0FDCF1F5-91AF-410C-A687-0A1EAC202794}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FDCF1F5-91AF-410C-A687-0A1EAC202794}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FDCF1F5-91AF-410C-A687-0A1EAC202794}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FDCF1F5-91AF-410C-A687-0A1EAC202794}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5C467107-F8E2-4364-906D-03443BF6DD88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5C467107-F8E2-4364-906D-03443BF6DD88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5C467107-F8E2-4364-906D-03443BF6DD88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5C467107-F8E2-4364-906D-03443BF6DD88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{299EBD2D-4E93-4A79-B5C3-313C73AE58B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{299EBD2D-4E93-4A79-B5C3-313C73AE58B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{299EBD2D-4E93-4A79-B5C3-313C73AE58B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{299EBD2D-4E93-4A79-B5C3-313C73AE58B5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {AB87B656-CF38-4ED9-8BBF-5970EEF49CD6}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,19 @@
+<fetch distinct="true">
+  <entity name="nav_auto">
+    <filter>
+      <condition attribute="nav_brandid" operator="eq" value="03f4809d-982a-ec11-b6e5-000d3a27d006" uiname="BMW" uitype="nav_brand" />
+    </filter>
+    <link-entity name="nav_nav_credit_nav_auto" from="nav_autoid" to="nav_autoid">
+      <link-entity name="nav_credit" from="nav_creditid" to="nav_creditid">
+        <attribute name="nav_name" />
+        <attribute name="nav_creditperiod" />
+        <attribute name="nav_creditid" />
+        <order attribute="nav_name" />
+      </link-entity>
+    </link-entity>
+    <link-entity name="nav_model" from="nav_modelid" to="nav_modelid">
+      <attribute name="nav_modelid" />
+      <attribute name="nav_name" />
+    </link-entity>
+  </entity>
+</fetch>
