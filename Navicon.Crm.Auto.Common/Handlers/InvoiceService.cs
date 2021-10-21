@@ -19,65 +19,43 @@ namespace Navicon.Crm.Auto.Common.Handlers
             _tracing = tracing ?? throw new ArgumentNullException(nameof(tracing));
         }
 
-        public void SetDefaultTypeIfNull(Entity target)
+        public void SetDefaultTypeIfNull(nav_invoice target)
         {
-            if (target.GetAttributeValue<object>("nav_type") is null)
+            if (target.nav_type is null)
             {
-                var invoice = new nav_invoice();
-                invoice.nav_type = nav_invoice_nav_type.Ruchnoe_sozdanie;
-                target["nav_type"] = invoice["nav_type"];
+                target.nav_type = nav_invoice_nav_type.Ruchnoe_sozdanie;
             }
         }
 
-        public void SetAgreementFactSumma(object target, bool increase)
+        public void SetAgreementFactSumma(nav_invoice target, bool increase)
         {
-            var invoice = GetInvoice(target);
-            if (invoice.nav_dogovorid is null || invoice.nav_amount is null
-                || invoice.nav_fact is null || invoice.nav_fact == false)
+            if (target.nav_dogovorid is null || target.nav_amount is null
+                || target.nav_fact is null || target.nav_fact == false)
             {
                 return;
             }
-            var agreement =_service.Retrieve(nav_agreement.EntityLogicalName, invoice.nav_dogovorid.Id,
+            var agreement =_service.Retrieve(nav_agreement.EntityLogicalName, target.nav_dogovorid.Id,
                 new ColumnSet(nav_agreement.Fields.nav_factsumma, nav_agreement.Fields.nav_summa))
                 .ToEntity<nav_agreement>();
             if (increase)
             {
-                IncFactSumma(agreement, invoice);
+                IncFactSumma(agreement, target);
             }
             else
             {
-                DecFactSumma(agreement, invoice);
+                DecFactSumma(agreement, target);
             }
         }
-
-        private nav_invoice GetInvoice(object target)
+        public void UpdateTargetByImage(nav_invoice target, nav_invoice image)
         {
-            nav_invoice targetInvoice = target is Entity ? (target as Entity).ToEntity<nav_invoice>() : null;
-            if (targetInvoice is null)
+            if (target.nav_dogovorid is null)
             {
-                var targetRef = target as EntityReference;
-                targetInvoice = _service.Retrieve(nav_invoice.EntityLogicalName, targetRef.Id,
-                    new ColumnSet(nav_invoice.Fields.nav_fact, nav_invoice.Fields.nav_dogovorid,
-                    nav_invoice.Fields.nav_amount)).ToEntity<nav_invoice>();
+                target.nav_dogovorid = image.nav_dogovorid;
             }
-            else
+            if (target.nav_amount is null)
             {
-                if (targetInvoice.nav_dogovorid is null)
-                {
-                    targetInvoice.nav_dogovorid = _service.Retrieve(nav_invoice.EntityLogicalName,
-                        targetInvoice.Id,
-                        new ColumnSet(nav_invoice.Fields.nav_dogovorid)).ToEntity<nav_invoice>()
-                        .nav_dogovorid;
-                }
-                if (targetInvoice.nav_amount is null)
-                {
-                    targetInvoice.nav_amount = _service.Retrieve(nav_invoice.EntityLogicalName,
-                        targetInvoice.Id,
-                        new ColumnSet(nav_invoice.Fields.nav_amount)).ToEntity<nav_invoice>()
-                        .nav_amount;
-                }
+                target.nav_amount = image.nav_amount;
             }
-            return targetInvoice;
         }
         private void IncFactSumma(nav_agreement agreement, nav_invoice invoice)
         {
@@ -89,13 +67,11 @@ namespace Navicon.Crm.Auto.Common.Handlers
             else
             {
                 newFactSumma = invoice.nav_amount.Value;
-                agreement.nav_factsumma = new Money();
             }
             if (newFactSumma <= agreement.nav_summa.Value)
             {
-                agreement.nav_factsumma.Value = newFactSumma;
                 invoice.nav_paydate = DateTime.Now;
-                _service.Update(agreement);
+                _service.Update(new nav_agreement(agreement.Id) { nav_factsumma = new Money(newFactSumma) });
             }
             else
             {
@@ -106,9 +82,9 @@ namespace Navicon.Crm.Auto.Common.Handlers
         {
             if (agreement.nav_factsumma != null)
             {
-                agreement.nav_factsumma.Value -= invoice.nav_amount.Value;
+                var factSumma = agreement.nav_factsumma.Value - invoice.nav_amount.Value;
+                _service.Update(new nav_agreement(agreement.Id) { nav_factsumma = new Money(factSumma) });
             }
-            _service.Update(agreement);
         }
     }
 }

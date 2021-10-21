@@ -72,7 +72,8 @@
     <Compile Include="nav_agreement\PreAgreementUpdate.cs" />
     <Compile Include="nav_communication\PreCommunicationCreateUpdate.cs" />
     <Compile Include="nav_invoice\PreInvoiceCreate.cs" />
-    <Compile Include="nav_invoice\PreInvoiceCreateUpdateDelete.cs" />
+    <Compile Include="nav_invoice\PreInvoiceUpdate.cs" />
+    <Compile Include="nav_invoice\PreInvoiceDelete.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

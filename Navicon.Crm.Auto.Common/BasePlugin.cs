@@ -26,7 +26,7 @@ namespace Navicon.Crm.Auto.Common
             catch(Exception ex)
             {
                 traceService.Trace(ex.ToString());
-                throw new InvalidPluginExecutionException(ex.Message);
+                throw new InvalidPluginExecutionException(ex.Message, ex);
             }
         }
         /// <summary>
