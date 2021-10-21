@@ -1,17 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\ILMerge.3.0.41\build\ILMerge.props" Condition="Exists('..\packages\ILMerge.3.0.41\build\ILMerge.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{299EBD2D-4E93-4A79-B5C3-313C73AE58B5}</ProjectGuid>
+    <ProjectGuid>{17CEE511-13EF-4D74-B626-3999339B5AAA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Navicon.Crm.Auto.Common</RootNamespace>
-    <AssemblyName>Navicon.Crm.Auto.Common</AssemblyName>
+    <RootNamespace>Navicon.Crm.Auto.Workflows</RootNamespace>
+    <AssemblyName>Navicon.Crm.Auto.Workflows</AssemblyName>
     <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,7 +37,7 @@
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <AssemblyOriginatorKeyFile>Navicon.Crm.Auto.Common.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>Navicon.Crm.Auto.Workflows.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=5.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -110,23 +113,33 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseActivity.cs" />
-    <Compile Include="BasePlugin.cs" />
-    <Compile Include="Entities\Contact.cs" />
-    <Compile Include="Entities\CrmServiceContext.cs" />
-    <Compile Include="Entities\nav_agreement.cs" />
-    <Compile Include="Entities\nav_communication.cs" />
-    <Compile Include="Entities\nav_invoice.cs" />
-    <Compile Include="Entities\OptionSets.cs" />
-    <Compile Include="Handlers\AgreementService.cs" />
-    <Compile Include="Handlers\CommunicationService.cs" />
-    <Compile Include="Handlers\InvoiceService.cs" />
+    <Compile Include="Agreement\HasRujnoeTypeInvoicesActivity.cs" />
+    <Compile Include="Agreement\SetPaymentPlanDateActivity.cs" />
+    <Compile Include="Agreement\CreatePaymentPlanActivity.cs" />
+    <Compile Include="Agreement\DeleteRelatedAutoInvoicesActivity.cs" />
+    <Compile Include="Agreement\HasFactInvoicesActivity.cs" />
+    <Compile Include="Agreement\HasInvoicesActivity.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
-    <None Include="Navicon.Crm.Auto.Common.snk" />
+    <None Include="Navicon.Crm.Auto.Workflows.snk" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Navicon.Crm.Auto.Common\Navicon.Crm.Auto.Common.csproj">
+      <Project>{299ebd2d-4e93-4a79-b5c3-313c73ae58b5}</Project>
+      <Name>Navicon.Crm.Auto.Common</Name>
+      <Private>True</Private>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\ILMerge.3.0.41\build\ILMerge.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILMerge.3.0.41\build\ILMerge.props'))" />
+    <Error Condition="!Exists('..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets'))" />
+  </Target>
+  <Import Project="..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets" Condition="Exists('..\packages\ILMerge.MSBuild.Task.1.0.7\build\ILMerge.MSBuild.Task.targets')" />
 </Project>
