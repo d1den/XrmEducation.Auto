@@ -10,13 +10,14 @@ using Navicon.Crm.Auto.Common.Handlers;
 
 namespace Navicon.Crm.Auto.Plugins.nav_invoice
 {
-    public sealed class PreInvoiceCreate : BasePlugin
+    public sealed class PreInvoiceUpdate : BasePlugin
     {
         public override void ExecutePluginLogic(object target, IOrganizationService service, ITracingService tracing, IPluginExecutionContext pluginContext)
         {
-            var targetInvoice = (target as Entity).ToEntity<Entities.nav_invoice>();
             InvoiceService invoiceService = new InvoiceService(service, tracing);
-            invoiceService.SetDefaultTypeIfNull(targetInvoice);
+            var imageInvoice = pluginContext.PreEntityImages["image"].ToEntity<Entities.nav_invoice>();
+            var targetInvoice = (target as Entity).ToEntity<Entities.nav_invoice>();
+            invoiceService.UpdateTargetByImage(targetInvoice, imageInvoice);
             invoiceService.SetAgreementFactSumma(targetInvoice, true);
         }
     }

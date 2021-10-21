@@ -22,9 +22,11 @@ namespace Navicon.Crm.Auto.Common.Handlers
         public void CheckForMainDublicate(Entity target)
         {
             var communication = target.ToEntity<nav_communication>();
+
             bool? isMain = false;
             EntityReference contactId;
             nav_communication_nav_type? type;
+
             if (TryGetCommunicationFromDB(communication.Id, out nav_communication communicationFromDB))
             {
                 isMain = communication.nav_main ?? communicationFromDB.nav_main;

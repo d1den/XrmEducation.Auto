@@ -10,19 +10,13 @@ using Navicon.Crm.Auto.Common.Handlers;
 
 namespace Navicon.Crm.Auto.Plugins.nav_invoice
 {
-    public sealed class PreInvoiceCreateUpdateDelete : BasePlugin
+    public sealed class PreInvoiceDelete : BasePlugin
     {
         public override void ExecutePluginLogic(object target, IOrganizationService service, ITracingService tracing, IPluginExecutionContext pluginContext)
         {
             InvoiceService invoiceService = new InvoiceService(service, tracing);
-            if (pluginContext.MessageName?.ToUpper() == "DELETE")
-            {
-                invoiceService.SetAgreementFactSumma(target, false);
-            }
-            else
-            {
-                invoiceService.SetAgreementFactSumma(target, true);
-            }
+            var imageInvoice = pluginContext.PreEntityImages["image"].ToEntity<Entities.nav_invoice>();
+            invoiceService.SetAgreementFactSumma(imageInvoice, false);
         }
     }
 }

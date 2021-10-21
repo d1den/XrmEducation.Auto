@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.Xrm.Sdk;
 
 namespace Navicon.Crm.Auto.Common
@@ -30,7 +26,7 @@ namespace Navicon.Crm.Auto.Common
             catch(Exception ex)
             {
                 traceService.Trace(ex.ToString());
-                throw new InvalidPluginExecutionException(ex.Message);
+                throw new InvalidPluginExecutionException(ex.Message, ex);
             }
         }
         /// <summary>
